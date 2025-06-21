@@ -6,9 +6,11 @@ const cors = require("cors")
 const dotenv = require("dotenv")
 const jwt = require("jsonwebtoken")
 const bcrypt = require("bcryptjs")
+const path = require("path");
 
 // Routes
 const adminRoutes = require("./routes/admin")
+const blogRoutes = require("./routes/blogRoutes")
 
 // Models
 const Session = require("./models/Session")
@@ -27,6 +29,7 @@ app.use(cors())
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Socket.io setup
 const io = new Server(server, {
@@ -48,7 +51,7 @@ mongoose
 
 // API routes
 app.use("/api/admin", adminRoutes)
-
+app.use("/api/blogs", blogRoutes);
 // Socket.io logic
 const waitingUsers = {
   text: [],
