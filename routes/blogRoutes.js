@@ -59,4 +59,17 @@ router.get("/:slug", async (req, res) => {
   }
 });
 
+// DELETE: Delete blog by slug
+router.delete("/:slug", async (req, res) => {
+  try {
+    const deleted = await Blog.findOneAndDelete({ slug: req.params.slug });
+    if (!deleted) {
+      return res.status(404).json({ message: "Blog not found" });
+    }
+    res.json({ message: "Blog deleted" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 module.exports = router;
