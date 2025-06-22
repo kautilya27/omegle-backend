@@ -368,25 +368,29 @@ setInterval(() => {
 // Create default admin user if none exists
 const createDefaultAdmin = async () => {
   try {
-    const adminCount = await Admin.countDocuments()
+    const adminCount = await Admin.countDocuments();
 
     if (adminCount === 0) {
-      const hashedPassword = await bcrypt.hash("admin123", 10)
+      const username = process.env.ADMIN_USERNAME || "admin";
+      const password = process.env.ADMIN_PASSWORD || "admin123";
+
+      const hashedPassword = await bcrypt.hash(password, 10);
 
       const admin = new Admin({
-        username: "admin",
+        username,
         password: hashedPassword,
-      })
+      });
 
-      await admin.save()
-      console.log("Default admin user created")
+      await admin.save();
+      console.log("Default admin user created");
     }
   } catch (error) {
-    console.error("Error creating default admin:", error)
+    console.error(" Error creating default admin:", error);
   }
-}
+};
 
-createDefaultAdmin()
+createDefaultAdmin();
+
 
 // Start server
 const PORT = process.env.PORT || 5000
