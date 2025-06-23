@@ -50,14 +50,18 @@ router.get("/", async (req, res) => {
 });
 
 // GET: Single blog by slug
+// In your backend route for fetching one blog (add suggested)
 router.get("/:slug", async (req, res) => {
   const blog = await Blog.findOne({ slug: req.params.slug });
-  if (blog) {
-    res.json(blog);
-  } else {
-    res.status(404).json({ message: "Blog not found" });
-  }
+  if (!blog) return res.status(404).json({ message: "Not found" });
+
+  const suggested = await Blog.find({ slug: { $ne: req.params.slug } })
+    .sort({ createdAt: -1 })
+    .limit(3); // or 5
+
+  res.json({ blog, suggested });
 });
+
 
 // DELETE: Delete blog by slug
 router.delete("/:slug", async (req, res) => {
