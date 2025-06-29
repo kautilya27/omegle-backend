@@ -76,4 +76,36 @@ router.delete("/:slug", async (req, res) => {
   }
 });
 
+// update route of blog
+router.put("/:slug", upload.single("image"), async (req, res) => {
+  try {
+    const { slug } = req.params;
+    const { metaTitle, metaDesc, author, title, content } = req.body;
+
+    const blog = await Blog.findOne({ slug });
+    if (!blog) {
+      return res.status(404).json({ message: "Blog not found" });
+    }
+
+    // Update fields
+    blog.metaTitle = metaTitle || blog.metaTitle;
+    blog.metaDesc = metaDesc || blog.metaDesc;
+    blog.author = author || blog.author;
+    blog.title = title || blog.title;
+    blog.content = content ? require("he").decode(content) : blog.content;
+
+    // If image is updated
+    if (req.file) {
+      blog.imageUrl = `/uploads/${req.file.filename}`;
+    }
+
+    await blog.save();
+
+    res.json({ message: "Blog updated", blog });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
 module.exports = router;
